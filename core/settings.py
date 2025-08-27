@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-a*d)l1$k-yf6n=h%j09pf!ai_o!h=us5hnj#e#jm&+@n6v_*j4
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+ADMIN_URL = config("ADMIN_URL", "admin/")
 ALLOWED_HOSTS = []
 
 
@@ -105,8 +105,8 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "soprescom API",
-    "DESCRIPTION": "Documentation of API endpoints of soprescom",
+    "TITLE": "Project API",
+    "DESCRIPTION": "Documentation of API endpoints of Project",
     "VERSION": "1.0.0",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
     "SCHEMA_PATH_PREFIX": "/api/",
