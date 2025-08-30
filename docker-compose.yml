@@ -25,10 +25,8 @@ services:
     depends_on:
       - db
       - redis
-    environment:
-      - DEBUG=1
-      - DATABASE_URL=postgres://dashboard_user:dashboard_pass@db:5432/project_dashboard
-      - REDIS_URL=redis://redis:6379/1
+    env_file:
+      - .env
 
   web:
     build: .
@@ -40,10 +38,8 @@ services:
     depends_on:
       - db
       - redis
-    environment:
-      - DEBUG=1
-      - DATABASE_URL=postgres://dashboard_user:dashboard_pass@db:5432/project_dashboard
-      - REDIS_URL=redis://redis:6379/1
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
