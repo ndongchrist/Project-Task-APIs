@@ -4,6 +4,7 @@ import logging
 
 
 from rest_framework import generics, status, filters
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -30,6 +31,8 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     List all projects with pagination, search, and filtering.
     Create new projects.
     """
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "user"
     filterset_class = ProjectFilter
     search_fields = ['title', 'description']
     ordering_fields = ['title', 'created', 'updated']
@@ -58,6 +61,8 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = ProjectSerializer
     lookup_field = 'id'
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "user"
     
     def get_queryset(self):
         """Optimized queryset with related data."""
@@ -79,6 +84,8 @@ class TaskListCreateView(generics.ListCreateAPIView):
     search_fields = ['title', 'description']
     ordering_fields = ['title', 'status', 'created', 'updated']
     ordering = ['-created']
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "user"
     
     def get_queryset(self):
         """Optimized queryset with select_related and prefetch_related."""
@@ -107,6 +114,8 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     Retrieve, update, or delete a specific task.
     """
     lookup_field = 'id'
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "user"
     
     def get_queryset(self):
         """Optimized queryset with related data."""

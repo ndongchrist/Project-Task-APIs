@@ -4,6 +4,7 @@ A professional Django REST API for project and task management with time trackin
 
 ## Features
 
+- **Authentication System**: Secure login/logout with custom landing page
 - **Project Management**: Create, edit, delete, and list projects with pagination and filtering
 - **Task Management**: Comprehensive task management with status tracking and time estimation
 - **Time Tracking**: Start/stop timers for tasks with automatic time accumulation
@@ -13,8 +14,8 @@ A professional Django REST API for project and task management with time trackin
 
 ## Tech Stack
 
-- **Backend**: Django 4.2 + Django REST Framework
-- **Database**: PostgreSQL (with SQLite fallback)
+- **Backend**: Django 5 + Django REST Framework
+- **Database**: PostgreSQL (with  fallback)
 - **Caching**: Redis for performance optimization
 - **Containerization**: Docker & Docker Compose
 - **Documentation**: drf-spectacular (OpenAPI/Swagger)
@@ -32,13 +33,13 @@ A professional Django REST API for project and task management with time trackin
 
 2. **Start the application**
    ```bash
-   docker-compose up --build
+   docker-compose up -d --build
    ```
 
 3. **Run migrations and create sample data**
    ```bash
-   docker-compose exec web python manage.py migrate
-   docker-compose exec web python manage.py create_sample_data
+   docker-compose exec -it web python manage.py migrate
+   docker-compose exec -it web python manage.py create_sample_data
    ```
 
 4. **Access the application**
@@ -98,6 +99,16 @@ A professional Django REST API for project and task management with time trackin
 ### Dashboard
 - `GET /api/v1/dashboard/` - Get dashboard overview with metrics
 
+### Tokens
+- `POST /api/token/refresh/` - Refreshes the JWT access token using a valid refresh token.
+- `POST /api/token/` - Obtain JWT access and refresh tokens for authentication.
+
+### Authentication
+- `POST /api/auth/logout/` - For Logging out
+- `POST /api/auth/register/` - For Logging out
+
+
+
 ## Architecture Highlights
 
 ### Performance Optimizations
@@ -123,35 +134,26 @@ Run the test suite:
 
 ```bash
 # Using Docker
-docker-compose exec web python -m pytest
+docker-compose exec web bash pytest --cov=project
 
 # Local development
-python -m pytest
+pytest --cov=project
 ```
 
 ## Development Notes
 
-### Time Spent on Assignment
-- **Total Time**: ~6-8 hours
-- **Database Design**: 1 hour
-- **API Development**: 3 hours  
-- **Optimization & Caching**: 1.5 hours
-- **Testing & Documentation**: 1.5 hours
-- **Docker Setup**: 1 hour
-
 ### What I Enjoyed
 - Implementing the time tracking system with database constraints
 - Optimizing queries with Django ORM features
-- Creating comprehensive API documentation
-- Building a robust caching strategy
+- Creating comprehensive API documentation + Custom Landing Page for accessing API's
+- Building a robust caching strategy using Redis
 
 ### What Could Be Improved With More Time
-- **Authentication & Authorization**: JWT-based auth with user permissions
 - **WebSocket Integration**: Real-time timer updates
 - **Advanced Analytics**: More detailed reporting and charts
 - **File Uploads**: Task attachments and project documents
 - **Notification System**: Email/push notifications for task updates
-- **API Rate Limiting**: Implement rate limiting for production use
+
 
 ### Satisfied Components
 - **Database Design**: Well-normalized schema with proper relationships
