@@ -31,7 +31,7 @@ def login_view(request):
         
         if not email or not password:
             messages.error(request, 'Email and password are required.')
-            return render(request, 'dashboard/landing.html')
+            return render(request, 'index.html')
         
         try:
             user = authenticate(request, email=email, password=password)
@@ -67,7 +67,7 @@ def login_view(request):
             logger.error(f"Login error for {email}: {str(e)}")
             messages.error(request, 'An error occurred during login. Please try again.')
     
-    return render(request, 'dashboard/landing.html')
+    return render(request, 'index.html')
 
 @login_required
 def logout_view(request):
