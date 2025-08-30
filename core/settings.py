@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
@@ -45,6 +46,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'drf_spectacular',
     'django_extensions',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -63,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.LoginRequiredMiddleware', # Custom middleware to enforce login on certain URLs
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -84,6 +88,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 AUTH_USER_MODEL = "users.User"
+LOGIN_REDIRECT_URL = '/api/docs/'
+LOGOUT_REDIRECT_URL = '/'
 
 # ---------------------------------------------------------------------
 # DJANGO REST FRAMEWORK
@@ -105,6 +111,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
 # ---------------------------------------------------------------------

@@ -4,9 +4,9 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import path, include
-from django.views.i18n import JavaScriptCatalog, set_language
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from users.api.api import CustomTokenObtainPairView, CustomTokenRefreshView
+from project.api.api import *
 
 
 urlpatterns = [
@@ -20,7 +20,11 @@ urlpatterns = [
     path(f"api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(f"api/docs/", SpectacularSwaggerView.as_view(url_name="api-schema"), name="api-docs"),
     
-    # homepage
-    # path("", include("project.urls")),
-    
+    # Project and Task Management APIs
+    path('api/v1/', include('project.urls')),
+    path('', include('users.urls')),
+
+    # Home Page
+    # path('', include('.urls')),
+
 ]
