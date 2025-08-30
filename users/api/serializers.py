@@ -10,7 +10,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from users.models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -86,11 +85,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_("invalid_password"))
         return value
 
-    def validate_has_accepted_terms(self, value: bool) -> bool:
-        if not value:
-            raise serializers.ValidationError(_("must_accept_terms"))
-        return value
-
     def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
         if data.get("password") != data.get("password_confirm"):
             raise serializers.ValidationError(_("password_mismatch"))
@@ -98,8 +92,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: Dict[str, Any]) -> User:
         validated_data.pop("password_confirm")
-        validated_data["is_active"] = True
         user = User.objects.create_user(**validated_data)
+        user.is_active = True
         user.save()
         return user
 
