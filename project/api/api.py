@@ -1,7 +1,7 @@
+from queue import Full
 from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 import logging
-
 
 from rest_framework import generics, status, filters
 from rest_framework.throttling import ScopedRateThrottle
@@ -12,7 +12,7 @@ from django.db import transaction, models
 from django.utils import timezone
 from django.core.cache import cache
 from django.db.models import Count, Sum, Q, Prefetch
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from django.core.exceptions import ValidationError
 
@@ -26,6 +26,38 @@ from .filters import ProjectFilter, TaskFilter
 
 logger = logging.getLogger(__name__)
 
+@extend_schema(
+    description="List all projects or create a new project. Supports pagination, search by title/description, and filtering by various parameters.",
+    responses={
+        200: ProjectListSerializer(many=True),
+        201: ProjectSerializer,
+        400: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    parameters=[
+        OpenApiParameter(
+            name='search',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Search projects by title or description (case-insensitive partial match)",
+            examples=[
+                OpenApiExample("Search by title", value="Website"),
+                OpenApiExample("Search by description", value="e-commerce")
+            ]
+        ),
+        OpenApiParameter(
+            name='ordering',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Order results by: title, created, updated. Use '-' prefix for descending order (e.g., '-created')",
+            examples=[
+                OpenApiExample("Order by title ascending", value="title"),
+                OpenApiExample("Order by created descending", value="-created")
+            ]
+        )
+    ],
+    request=ProjectSerializer
+)
 class ProjectListCreateView(generics.ListCreateAPIView):
     """
     List all projects with pagination, search, and filtering.
@@ -55,6 +87,25 @@ class ProjectListCreateView(generics.ListCreateAPIView):
             return ProjectListSerializer
         return ProjectSerializer
 
+@extend_schema(
+    description="Retrieve, update, or delete a specific project by ID.",
+    responses={
+        200: ProjectSerializer,
+        404: OpenApiTypes.OBJECT,
+        400: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    request=ProjectSerializer,
+    parameters=[
+        OpenApiParameter(
+            name='id',
+            type=OpenApiTypes.UUID,
+            location=OpenApiParameter.PATH,
+            description="UUID of the project to retrieve/update/delete",
+            required=True
+        )
+    ]
+)
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a specific project.
@@ -75,6 +126,39 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
             )
         )
 
+@extend_schema(
+    description="List all tasks or create a new task. Supports pagination, search by title/description, and filtering by status, project, etc.",
+    responses={
+        200: TaskSerializer(many=True),
+        201: TaskCreateUpdateSerializer,
+        400: OpenApiTypes.OBJECT,
+        404: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    parameters=[
+        OpenApiParameter(
+            name='search',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Search tasks by title or description (case-insensitive partial match)",
+            examples=[
+                OpenApiExample("Search by title", value="Backend"),
+                OpenApiExample("Search by description", value="API")
+            ]
+        ),
+        OpenApiParameter(
+            name='ordering',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Order results by: title, status, created, updated. Use '-' prefix for descending order",
+            examples=[
+                OpenApiExample("Order by status ascending", value="status"),
+                OpenApiExample("Order by created descending", value="-created")
+            ]
+        )
+    ],
+    request=TaskCreateUpdateSerializer
+)
 class TaskListCreateView(generics.ListCreateAPIView):
     """
     List all tasks with filtering and search capabilities.
@@ -109,6 +193,26 @@ class TaskListCreateView(generics.ListCreateAPIView):
         except Project.DoesNotExist:
             raise ValidationError({'project_id': 'Project not found.'})
 
+@extend_schema(
+    description="Retrieve, update, or delete a specific task by ID.",
+    responses={
+        200: TaskSerializer,
+        201: TaskCreateUpdateSerializer,
+        400: OpenApiTypes.OBJECT,
+        404: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    request=TaskCreateUpdateSerializer,
+    parameters=[
+        OpenApiParameter(
+            name='id',
+            type=OpenApiTypes.UUID,
+            location=OpenApiParameter.PATH,
+            description="UUID of the task to retrieve/update/delete",
+            required=True
+        )
+    ]
+)
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a specific task.
@@ -131,9 +235,37 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @extend_schema(
     methods=['POST'],
+    description="Start a timer for a specific task. Creates a new time entry and updates task status to 'In Progress' if currently 'To Do'.",
     request=None,
-    responses={200: TimeEntrySerializer},
-    description="Start a timer for the specified task"
+    responses={
+        201: TimeEntrySerializer,
+        400: OpenApiTypes.OBJECT,
+        404: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    parameters=[
+        OpenApiParameter(
+            name='task_id',
+            type=OpenApiTypes.UUID,
+            location=OpenApiParameter.PATH,
+            description="UUID of the task to start timer for",
+            required=True
+        )
+    ],
+    examples=[
+        OpenApiExample(
+            "Successful response",
+            summary="Timer started successfully",
+            value={
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "task_id": "123e4567-e89b-12d3-a456-426614174000",
+                "start_time": "2025-08-30T08:40:00Z",
+                "end_time": "null",
+                "duration": "null"
+            },
+            status_codes=["201"]
+        )
+    ]
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -182,9 +314,37 @@ def start_timer(request, task_id: str) -> Response:
 
 @extend_schema(
     methods=['POST'],
+    description="Stop the active timer for a specific task. Updates the time entry with end time and duration, and updates task's total spent time.",
     request=None,
-    responses={200: TimeEntrySerializer},
-    description="Stop the active timer for the specified task"
+    responses={
+        200: TimeEntrySerializer,
+        400: OpenApiTypes.OBJECT,
+        404: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
+    parameters=[
+        OpenApiParameter(
+            name='task_id',
+            type=OpenApiTypes.UUID,
+            location=OpenApiParameter.PATH,
+            description="UUID of the task to stop timer for",
+            required=True
+        )
+    ],
+    examples=[
+        OpenApiExample(
+            "Successful response",
+            summary="Timer stopped successfully",
+            value={
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "task_id": "123e4567-e89b-12d3-a456-426614174000",
+                "start_time": "2025-08-30T08:40:00Z",
+                "end_time": "2025-08-30T09:40:00Z",
+                "duration": "01:00:00"
+            },
+            status_codes=["200"]
+        )
+    ]
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -232,22 +392,60 @@ def stop_timer(request, task_id: str) -> Response:
         )
 
 @extend_schema(
+    methods=['GET'],
+    description="Retrieve dashboard overview with aggregate metrics including task counts by status, total estimated/spent time, and time spent per project. Supports optional date range filtering.",
+    responses={
+        200: DashboardSerializer,
+        400: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT
+    },
     parameters=[
         OpenApiParameter(
             name='start_date',
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description='Start date for filtering (YYYY-MM-DD)'
+            description="Start date for filtering time entries (format: YYYY-MM-DD)",
+            examples=[
+                OpenApiExample("Start date example", value="2025-08-01")
+            ]
         ),
         OpenApiParameter(
             name='end_date',
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description='End date for filtering (YYYY-MM-DD)'
-        ),
+            description="End date for filtering time entries (format: YYYY-MM-DD)",
+            examples=[
+                OpenApiExample("End date example", value="2025-08-30")
+            ]
+        )
     ],
-    responses={200: DashboardSerializer},
-    description="Get dashboard overview with aggregate metrics"
+    examples=[
+        OpenApiExample(
+            "Successful response",
+            summary="Dashboard overview data",
+            value={
+                "task_counts": {
+                    "TODO": 5,
+                    "IN_PROGRESS": 3,
+                    "DONE": 10
+                },
+                "total_estimated_time": "50:30",
+                "total_spent_time": "45:15",
+                "time_spent_per_project": [
+                    {
+                        "project_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "project_title": "Website Redesign",
+                        "spent_time": "25:45"
+                    }
+                ],
+                "date_range_filter": {
+                    "start_date": "2025-08-01",
+                    "end_date": "2025-08-30"
+                }
+            },
+            status_codes=["200"]
+        )
+    ]
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
