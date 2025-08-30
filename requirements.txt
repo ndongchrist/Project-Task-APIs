@@ -1,8 +1,13 @@
+datetime==5.5
 django-extensions==4.1
+django-filter==25.1
+django-redis==6.0.0
 djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.28.0
 pip-chill==1.0.3
 psycopg-binary==3.2.9
 psycopg2-binary==2.9.10
+pytest-cov==6.2.1
+pytest-django==4.11.1
 python-decouple==3.8
 rest-framework-simplejwt==0.0.2
