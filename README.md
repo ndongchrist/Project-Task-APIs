@@ -106,7 +106,7 @@ A professional Django REST API for project and task management with time trackin
 
 ### Authentication
 - `POST /api/auth/logout/` - For Logging out
-- `POST /api/auth/register/` - For Logging out
+- `POST /api/auth/register/` - For Registering into the Application
 
 
 
