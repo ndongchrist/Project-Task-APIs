@@ -2,6 +2,8 @@
 
 A professional Django REST API for project and task management with time tracking capabilities.
 
+![The Class Diagram Used to Implement this system](class_diagram.png)
+
 ## Features
 
 - **Authentication System**: Secure login/logout with custom landing page
