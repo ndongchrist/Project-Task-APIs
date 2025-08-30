@@ -17,17 +17,6 @@ services:
     ports:
       - "6379:6379"
 
-  celery:
-    build: .
-    command: celery -A project_dashboard worker --loglevel=info
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-      - redis
-    env_file:
-      - .env
-
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
