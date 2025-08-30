@@ -1,4 +1,4 @@
-# Project Dashboard Backend
+# Project Task API - Backend
 
 A professional Django REST API for project and task management with time tracking capabilities.
 
@@ -29,8 +29,8 @@ A professional Django REST API for project and task management with time trackin
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
-   cd project-dashboard
+   git clone Project-Task-APIs
+   cd Project-Task-APIs
    ```
 
 2. **Start the application**
