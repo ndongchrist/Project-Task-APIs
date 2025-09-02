@@ -60,18 +60,27 @@ A professional Django REST API for project and task management with time trackin
 
 2. **Environment configuration**
 
+   Create a file .env at the level of the project and then copy this content inside and make sure it matches your local configuration
 
-   ```bash
-   # Create .env file
-   echo "DEBUG=True" > .env
-   echo "REDIS_URL=redis://localhost:6379/1" >> .env
+   ```.env
+   # Sample env
+   DB_NAME=your-db-name
+   DB_USER=postgres
+   DB_PASSWORD=your-passwd
+   DB_HOST=localhost
+   DB_PORT=5432
+
+   ADMIN_URL=admin/
+   DEBUG=True
+   SECRET_KEY=your-secret-key
+   REDIS_URL=redis://localhost:6379/0
    ```
 
 3. **Run migrations and create sample data**
    ```bash
    python manage.py migrate
    python manage.py create_sample_data --projects 10 --tasks-per-project 8
-   python manage.py create_demo_user --superuser
+   python manage.py create_demo_user 
    ```
 
 4. **Start development server**
