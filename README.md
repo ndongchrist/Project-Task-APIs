@@ -35,19 +35,19 @@ A professional Django REST API for project and task management with time trackin
 
 2. **Start the application**
    ```bash
-   docker-compose up -d --build
+   docker compose up -d --build
    ```
 
 3. **Run migrations and create sample data**
    ```bash
-   docker-compose exec -it web python manage.py migrate
-   docker-compose exec -it web python manage.py create_sample_data
+   docker compose exec -it web python manage.py migrate  #This commands will migrate changes into the DB
+   docker compose exec -it web python manage.py create_sample_data # This commands will create sample data for test
+   docker compose exec -it web python manage.py create_demo_user # email: admin123@devsecurity.com psswd: admin123
    ```
 
 4. **Access the application**
-   - API: http://localhost:8000/api/v1/
-   - Swagger Documentation: http://localhost:8000/api/docs/
-   - Admin Panel: http://localhost:8000/admin/
+   - Swagger Documentation: http://0.0.0.0:8000/api/docs/
+   - Admin Panel: http://0.0.0.0:8000/admin/
 
 ### Local Development
 

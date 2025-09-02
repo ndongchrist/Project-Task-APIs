@@ -13,8 +13,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--email',
             type=str,
-            default='admin@devsecurity.com',
-            help='Demo user email (default: admin@devsecurity.com)'
+            default='admin123@devsecurity.com',
+            help='Demo user email (default: admin123@devsecurity.com)'
         )
         parser.add_argument(
             '--password',
@@ -25,7 +25,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--superuser',
             action='store_true',
-            help='Create as superuser (default: False)'
+            default=True,
+            help='Create as superuser (default: True)'
         )
     
     @transaction.atomic
