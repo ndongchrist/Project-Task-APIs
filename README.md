@@ -29,7 +29,7 @@ A professional Django REST API for project and task management with time trackin
 
 1. **Clone the repository**
    ```bash
-   git clone Project-Task-APIs
+   git clone https://github.com/ndongchrist/Project-Task-APIs.git
    cd Project-Task-APIs
    ```
 
