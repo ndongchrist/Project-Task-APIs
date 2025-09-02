@@ -49,9 +49,9 @@ A professional Django REST API for project and task management with time trackin
    ```
 
 4. **Access the application**
-   - Access the Application on your browser via(Login Page): http://0.0.0.0:8000/
-   - Swagger Documentation: http://0.0.0.0:8000/api/docs/  # you need to be login in order to access this documention use the credentials provided by the `create_demo_user` command
-   - Admin Panel: http://0.0.0.0:8000/admin/
+   - Access the Application on your browser via(Login Page): http://0.0.0.0:8002/
+   - Swagger Documentation: http://0.0.0.0:8002/api/docs/  # you need to be login in order to access this documention use the credentials provided by the `create_demo_user` command
+   - Admin Panel: http://0.0.0.0:8002/admin/
 
 ### Local Development
 
@@ -91,7 +91,7 @@ A professional Django REST API for project and task management with time trackin
    ```bash
    python manage.py runserver
    ```
-   Access the application on a browser via: http://127.0.0.1:8000/
+   Access the application on a browser via: http://127.0.0.1:8002/
 
 ## API Endpoints
 
