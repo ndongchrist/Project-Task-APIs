@@ -34,6 +34,9 @@ A professional Django REST API for project and task management with time trackin
    ```
 
 2. **Start the application**
+
+   Before running the command to build images, create a `.env` file and copy the content of `.env-docker-sample.txt` into the `.env` (this will be config for docker services)
+
    ```bash
    docker compose up -d --build
    ```
@@ -140,13 +143,17 @@ A professional Django REST API for project and task management with time trackin
 - **Constraints**: Database-level constraints for data integrity
 - **UUID**: UUIDs as primary keys to prevent enumeration attacks
 
+
 ## Testing
 
 Run the test suite:
 
 ```bash
 # Using Docker
-docker-compose exec web bash pytest --cov=project
+docker compose exec -it web bash 
+
+#then while inside the shell found in the container enter...
+pytest --cov=project
 
 # Local development
 pytest --cov=project
