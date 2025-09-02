@@ -21,7 +21,7 @@ A professional Django REST API for project and task management with time trackin
 - **Caching**: Redis for performance optimization
 - **Containerization**: Docker & Docker Compose
 - **Documentation**: drf-spectacular (OpenAPI/Swagger)
-- **Testing**: pytest + factory-boy
+- **Testing**: pytest
 
 ## Quick Start
 
